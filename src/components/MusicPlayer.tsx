@@ -42,6 +42,7 @@ const tracks: Track[] = [
   { title: 'Neverending Story', artist: 'Stray Kids', videoId: 'ALd-Pocq7Hk' },
   { title: "Can't Stop", artist: 'Stray Kids', videoId: 'iI2v-CXKXU4' },
   { title: 'Something Just Like This', artist: 'The Chainsmokers & Coldplay', videoId: 'FM7MFYoylVs' },
+  { title: 'If the World Was Ending', artist: 'JP Saxe & Julia Michaels', videoId: '1jO2wSpAoxA' },
 ]
 
 const YT_STATE_PLAYING = 1

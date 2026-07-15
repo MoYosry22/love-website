@@ -7,7 +7,7 @@ const reasons = [
   { icon: '🍒', title: 'Your Sweetness', desc: 'The way you care for everyone around you melts my heart every time.' },
   { icon: '✨', title: 'Your Eyes', desc: 'They sparkle like diamonds and hold entire galaxies I want to get lost in.' },
   { icon: '🦋', title: 'Your Soul', desc: 'Beautiful, free, and extraordinary — just like you.' },
-  { icon: '🎀', title: 'Your Touch', desc: 'Gentle, warm, and electrifying — it sends shivers down my spine.' },
+  { icon: '🎀', title: 'Your Caring', desc: 'The way you look after everyone with such tenderness shows the depth of your beautiful heart.' },
   { icon: '🌙', title: 'Your Presence', desc: 'Being near you feels like coming home. You are my safe place.' },
 ]
 
