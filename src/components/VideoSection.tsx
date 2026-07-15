@@ -2,19 +2,14 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const videos = [
-  { id: 1, title: 'Bent the Knee', src: '/assets/videos/1-bent the knee.mp4' },
-  { id: 2, title: 'The Day We Met', src: '/assets/videos/The Day We Met.mp4' },
-  { id: 3, title: 'First Look', src: '/assets/videos/first look.mp4' },
-  { id: 4, title: 'Your Beautiful Smile', src: '/assets/videos/Your Beautiful Smile.mp4' },
-  { id: 5, title: 'Our Adventure', src: '/assets/videos/Our Adventure.mp4' },
-  { id: 6, title: 'Forever & Always', src: '/assets/videos/Forever & Always.mp4' },
-  { id: 7, title: 'Having Fun', src: '/assets/videos/having fun.mp4' },
+  { id: 1, title: 'Bent the Knee', src: '/assets/videos/1-bent the knee.mp4', thumb: '/assets/thumbnails/1-bent the knee.jpg', width: 480, height: 864 },
+  { id: 2, title: 'The Day We Met', src: '/assets/videos/The Day We Met.mp4', thumb: '/assets/thumbnails/The Day We Met.jpg', width: 478, height: 850 },
+  { id: 3, title: 'First Look', src: '/assets/videos/first look.mp4', thumb: '/assets/thumbnails/first look.jpg', width: 478, height: 850 },
+  { id: 4, title: 'Your Beautiful Smile', src: '/assets/videos/Your Beautiful Smile.mp4', thumb: '/assets/thumbnails/Your Beautiful Smile.jpg', width: 960, height: 1280 },
+  { id: 5, title: 'Our Adventure', src: '/assets/videos/Our Adventure.mp4', thumb: '/assets/thumbnails/Our Adventure.jpg', width: 480, height: 864 },
+  { id: 6, title: 'Forever & Always', src: '/assets/videos/Forever & Always.mp4', thumb: '/assets/thumbnails/Forever & Always.jpg', width: 480, height: 864 },
+  { id: 7, title: 'Having Fun', src: '/assets/videos/having fun.mp4', thumb: '/assets/thumbnails/having fun.jpg', width: 480, height: 864 },
 ]
-
-interface VideoDimensions {
-  width: number
-  height: number
-}
 
 interface VideoSectionProps {
   onVideoMutedChange: (muted: boolean) => void
@@ -23,47 +18,8 @@ interface VideoSectionProps {
 export default function VideoSection({ onVideoMutedChange }: VideoSectionProps) {
   const [activeVideo, setActiveVideo] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
-  const [thumbnails, setThumbnails] = useState<string[]>([])
-  const [dims, setDims] = useState<VideoDimensions[]>([])
   const videoRef = useRef<HTMLVideoElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
-
-  // Capture video frames as thumbnails + store dimensions
-  useEffect(() => {
-    const thumbArr: string[] = []
-    const dimsArr: VideoDimensions[] = []
-    let loaded = 0
-
-    videos.forEach((v, i) => {
-      const vid = document.createElement('video')
-      vid.src = v.src
-      vid.preload = 'metadata'
-      vid.muted = true
-      vid.playsInline = true
-
-      vid.addEventListener('loadedmetadata', () => {
-        vid.currentTime = 1.0
-      })
-
-      vid.addEventListener('seeked', () => {
-        const canvas = document.createElement('canvas')
-        canvas.width = vid.videoWidth
-        canvas.height = vid.videoHeight
-        const ctx = canvas.getContext('2d')
-        if (ctx) {
-          ctx.drawImage(vid, 0, 0, canvas.width, canvas.height)
-          thumbArr[i] = canvas.toDataURL('image/jpeg', 0.7)
-        }
-        dimsArr[i] = { width: vid.videoWidth, height: vid.videoHeight }
-        loaded++
-        if (loaded === videos.length) {
-          setThumbnails([...thumbArr])
-          setDims([...dimsArr])
-        }
-        vid.src = ''
-      })
-    })
-  }, [])
 
   const handleUnmute = useCallback(() => {
     const video = videoRef.current
@@ -122,9 +78,8 @@ export default function VideoSection({ onVideoMutedChange }: VideoSectionProps) 
     return () => observer.disconnect()
   }, [onVideoMutedChange])
 
-  const activeSrc = videos[activeVideo].src
-  const activeDim = dims[activeVideo]
-  const videoAspectRatio = activeDim ? `${activeDim.width} / ${activeDim.height}` : '16 / 9'
+  const active = videos[activeVideo]
+  const videoAspectRatio = `${active.width} / ${active.height}`
 
   return (
     <section ref={sectionRef} className="py-8 sm:py-10 px-4 md:px-8 relative">
@@ -178,7 +133,7 @@ export default function VideoSection({ onVideoMutedChange }: VideoSectionProps) 
             >
               <video
                 ref={videoRef}
-                src={activeSrc}
+                src={active.src}
                 muted
                 loop
                 playsInline
@@ -220,7 +175,7 @@ export default function VideoSection({ onVideoMutedChange }: VideoSectionProps) 
           {/* Video title overlay */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 sm:p-6 z-10">
             <p className="text-white font-[family-name:var(--font-script)] text-lg sm:text-xl">
-              {videos[activeVideo].title}
+              {active.title}
             </p>
           </div>
         </div>
@@ -242,15 +197,7 @@ export default function VideoSection({ onVideoMutedChange }: VideoSectionProps) 
               transition={{ delay: i * 0.08, duration: 0.5 }}
             >
               <div className="w-16 h-10 sm:w-24 sm:h-14 bg-black flex items-center justify-center overflow-hidden">
-                {thumbnails[i] ? (
-                  <img src={thumbnails[i]} alt={video.title} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-rose-300 to-pink-200 flex items-center justify-center">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white" opacity="0.7">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                )}
+                <img src={video.thumb} alt={video.title} className="w-full h-full object-cover" />
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="white" opacity="0.8" className="absolute">
                   <path d="M8 5v14l11-7z" />
                 </svg>
