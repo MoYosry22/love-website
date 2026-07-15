@@ -10,6 +10,7 @@ interface Track {
 interface MusicPlayerProps {
   isVisible: boolean
   autoPlayTrack?: number
+  muted?: boolean
 }
 
 declare global {
@@ -40,13 +41,14 @@ const tracks: Track[] = [
   { title: 'CASE 143', artist: 'Stray Kids', videoId: 'jYSlpC6Ud2A' },
   { title: 'Neverending Story', artist: 'Stray Kids', videoId: 'ALd-Pocq7Hk' },
   { title: "Can't Stop", artist: 'Stray Kids', videoId: 'iI2v-CXKXU4' },
+  { title: 'Something Just Like This', artist: 'The Chainsmokers & Coldplay', videoId: 'FM7MFYoylVs' },
 ]
 
 const YT_STATE_PLAYING = 1
 const YT_STATE_PAUSED = 2
 const YT_STATE_ENDED = 0
 
-export default function MusicPlayer({ isVisible, autoPlayTrack }: MusicPlayerProps) {
+export default function MusicPlayer({ isVisible, autoPlayTrack, muted }: MusicPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -55,6 +57,7 @@ export default function MusicPlayer({ isVisible, autoPlayTrack }: MusicPlayerPro
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const hasAutoPlayed = useRef(false)
   const isReady = useRef(false)
+  const isPlayingRef = useRef(false)
 
   const startProgressTracking = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current)
@@ -183,6 +186,21 @@ export default function MusicPlayer({ isVisible, autoPlayTrack }: MusicPlayerPro
       isReady.current = false
     }
   }, [isVisible, autoPlayTrack, startProgressTracking, stopProgressTracking, handleNextTrack])
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying
+  }, [isPlaying])
+
+  useEffect(() => {
+    const player = playerRef.current
+    if (!player || !isReady.current) return
+
+    if (muted && isPlayingRef.current) {
+      player.pauseVideo()
+    } else if (!muted && !isPlayingRef.current) {
+      player.playVideo()
+    }
+  }, [muted])
 
   const togglePlay = () => {
     const player = playerRef.current

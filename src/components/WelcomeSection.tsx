@@ -9,8 +9,9 @@ export default function WelcomeSection({ onEnter }: WelcomeSectionProps) {
   const [isOpened, setIsOpened] = useState(false)
 
   const handleOpen = () => {
+    if (isOpened) return
     setIsOpened(true)
-    setTimeout(() => onEnter(), 1500)
+    setTimeout(() => onEnter(), 2000)
   }
 
   return (
@@ -53,11 +54,15 @@ export default function WelcomeSection({ onEnter }: WelcomeSectionProps) {
 
       <div className="envelope-container cursor-pointer" onClick={handleOpen}>
         <motion.div
-          className="relative w-[280px] h-[200px] sm:w-[320px] sm:h-[230px] md:w-[380px] md:h-[270px]"
+          className="relative w-[340px] h-[245px] sm:w-[420px] sm:h-[300px] md:w-[500px] md:h-[355px]"
           whileHover={!isOpened ? { scale: 1.03 } : undefined}
           whileTap={!isOpened ? { scale: 0.98 } : undefined}
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            scale: isOpened ? 1.05 : 1,
+          }}
           transition={{ delay: 1.5, duration: 0.8, type: 'spring' }}
         >
           <svg viewBox="-20 -80 420 390" className="w-full h-full" fill="none">
@@ -91,143 +96,122 @@ export default function WelcomeSection({ onEnter }: WelcomeSectionProps) {
               </filter>
             </defs>
 
-            {/* === CLOSED STATE === */}
-            {!isOpened && (
-              <>
-                {/* Envelope body */}
-                <rect x="0" y="0" width="380" height="270" rx="8" fill="url(#envBody)" filter="url(#envDropShadow)" />
+            {/* Envelope body - always visible */}
+            <rect x="0" y="0" width="380" height="270" rx="8" fill="url(#envBody)" filter="url(#envDropShadow)" />
 
-                {/* Small hearts inside envelope */}
-                {[
-                  { x: 50, y: 60, s: 0.6, o: 0.08 },
-                  { x: 130, y: 80, s: 0.5, o: 0.06 },
-                  { x: 250, y: 55, s: 0.55, o: 0.07 },
-                  { x: 320, y: 75, s: 0.5, o: 0.06 },
-                  { x: 80, y: 160, s: 0.45, o: 0.05 },
-                  { x: 300, y: 170, s: 0.5, o: 0.06 },
-                  { x: 190, y: 100, s: 0.4, o: 0.04 },
-                ].map((h, i) => (
-                  <path
-                    key={i}
-                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                    fill="#e11d48"
-                    opacity={h.o}
-                    transform={`translate(${h.x}, ${h.y}) scale(${h.s})`}
-                  />
-                ))}
+            {/* Small hearts inside envelope */}
+            {[
+              { x: 50, y: 60, s: 0.6, o: 0.08 },
+              { x: 130, y: 80, s: 0.5, o: 0.06 },
+              { x: 250, y: 55, s: 0.55, o: 0.07 },
+              { x: 320, y: 75, s: 0.5, o: 0.06 },
+              { x: 80, y: 160, s: 0.45, o: 0.05 },
+              { x: 300, y: 170, s: 0.5, o: 0.06 },
+              { x: 190, y: 100, s: 0.4, o: 0.04 },
+            ].map((h, i) => (
+              <path
+                key={i}
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                fill="#e11d48"
+                opacity={h.o}
+                transform={`translate(${h.x}, ${h.y}) scale(${h.s})`}
+              />
+            ))}
 
-                {/* Envelope flap - triangular */}
+            {/* Open flap - points upward above the envelope */}
+            <motion.g
+              animate={{ opacity: isOpened ? 1 : 0 }}
+              transition={{ duration: 0.4, delay: isOpened ? 0.15 : 0 }}
+            >
+              <path
+                d="M0 0 L190 -80 L380 0 Z"
+                fill="url(#envFlapBack)"
+                stroke="#f9a8d4"
+                strokeWidth="0.8"
+              />
+            </motion.g>
+
+            {/* Closed flap + bow + seal (visible when closed, fades out on open) */}
+            <motion.g
+              animate={{ opacity: isOpened ? 0 : 1 }}
+              transition={{ duration: 0.35 }}
+            >
+              {/* Closed flap triangle */}
+              <path
+                d="M0 0 L190 120 L380 0 Z"
+                fill="url(#envFlap)"
+                stroke="#f9a8d4"
+                strokeWidth="1"
+              />
+              {/* Decorative bow */}
+              <g style={{ animation: 'bowBreathe 4s ease-in-out infinite' }}>
+                <defs>
+                  <linearGradient id="bowGrad2" x1="0.3" y1="0" x2="0.7" y2="1">
+                    <stop offset="0%" stopColor="#f472b6" />
+                    <stop offset="100%" stopColor="#e11d48" />
+                  </linearGradient>
+                </defs>
+                <path d="M190 120 C188 110 178 84 158 84 C148 84 142 92 142 102 C142 112 148 120 156 120 Z" fill="url(#bowGrad2)" />
+                <path d="M190 120 C192 110 202 84 222 84 C232 84 238 92 238 102 C238 112 232 120 224 120 Z" fill="url(#bowGrad2)" />
+                <ellipse cx="190" cy="120" rx="5" ry="4.5" fill="#db2777" />
+                <path d="M186 123 L180 158 L176 170 L172 158 L184 123Z" fill="url(#bowGrad2)" opacity="0.85" />
+                <path d="M194 123 L200 158 L204 170 L208 158 L196 123Z" fill="url(#bowGrad2)" opacity="0.85" />
+              </g>
+              {/* Wax seal */}
+              <g filter="url(#sealShadow)" style={{ animation: 'heartBreathe 3s ease-in-out infinite' }}>
+                <circle cx="190" cy="210" r="22" fill="url(#sealGrad)" />
+                <circle cx="190" cy="210" r="18" fill="none" stroke="#fff" strokeWidth="0.8" opacity="0.3" />
+                <circle cx="190" cy="210" r="14" fill="none" stroke="#fff" strokeWidth="0.4" opacity="0.2" />
                 <path
-                  d="M0 0 L190 120 L380 0 Z"
-                  fill="url(#envFlap)"
-                  stroke="#f9a8d4"
-                  strokeWidth="1"
+                  d="M190 218 l-1.2-1.1C184.5 212.8 182 210.2 182 207.1 182 204.6 183.7 203 185.8 203c1.2 0 2.3.6 3.2 1.4C189.9 203.6 191 203 192.2 203 194.3 203 196 204.6 196 207.1c0 3.1-2.5 5.7-6.8 9.8L190 218z"
+                  fill="#fff"
+                  opacity="0.85"
+                  transform="translate(0, -3) scale(0.9)"
                 />
+              </g>
+            </motion.g>
 
-                {/* Decorative bow */}
-                <g style={{ animation: 'bowBreathe 4s ease-in-out infinite' }}>
-                  <defs>
-                    <linearGradient id="bowGrad2" x1="0.3" y1="0" x2="0.7" y2="1">
-                      <stop offset="0%" stopColor="#f472b6" />
-                      <stop offset="100%" stopColor="#e11d48" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M190 120 C188 110 178 84 158 84 C148 84 142 92 142 102 C142 112 148 120 156 120 Z" fill="url(#bowGrad2)" />
-                  <path d="M190 120 C192 110 202 84 222 84 C232 84 238 92 238 102 C238 112 232 120 224 120 Z" fill="url(#bowGrad2)" />
-                  <ellipse cx="190" cy="120" rx="5" ry="4.5" fill="#db2777" />
-                  <path d="M186 123 L180 158 L176 170 L172 158 L184 123Z" fill="url(#bowGrad2)" opacity="0.85" />
-                  <path d="M194 123 L200 158 L204 170 L208 158 L196 123Z" fill="url(#bowGrad2)" opacity="0.85" />
-                </g>
+            {/* Letter sliding up */}
+            <motion.g
+              filter="url(#letterShadow)"
+              initial={false}
+              animate={{
+                y: isOpened ? -30 : 50,
+                opacity: isOpened ? 1 : 0,
+              }}
+              transition={{ duration: 0.8, delay: isOpened ? 0.3 : 0, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <rect x="30" y="-50" width="320" height="80" rx="4" fill="url(#letterGrad)" stroke="#fda4af" strokeWidth="0.5" />
+              <path
+                d="M108 -6 l-0.9-0.8C104.4 -9.5 102.5 -11.5 102.5 -13.8 102.5 -15.7 103.8 -17 105.4 -17c.9 0 1.7.5 2.4 1 .7-.6 1.5-1 2.4-1 1.6 0 2.9 1.3 2.9 3.2 0 2.3-1.9 4.3-5.1 7.3L108 -6z"
+                fill="#e11d48"
+                opacity="0.7"
+              />
+              <text x="190" y="-2" textAnchor="middle" fontFamily="'Great Vibes', cursive" fontSize="26" fill="#e11d48" opacity="0.85">
+                I love you
+              </text>
+              <path
+                d="M272 -6 l-0.9-0.8C268.4 -9.5 266.5 -11.5 266.5 -13.8 266.5 -15.7 267.8 -17 269.4 -17c.9 0 1.7.5 2.4 1 .7-.6 1.5-1 2.4-1 1.6 0 2.9 1.3 2.9 3.2 0 2.3-1.9 4.3-5.1 7.3L272 -6z"
+                fill="#e11d48"
+                opacity="0.7"
+              />
+            </motion.g>
 
-                {/* Wax seal */}
-                <g filter="url(#sealShadow)" style={{ animation: 'heartBreathe 3s ease-in-out infinite' }}>
-                  <circle cx="190" cy="210" r="22" fill="url(#sealGrad)" />
-                  <circle cx="190" cy="210" r="18" fill="none" stroke="#fff" strokeWidth="0.8" opacity="0.3" />
-                  <circle cx="190" cy="210" r="14" fill="none" stroke="#fff" strokeWidth="0.4" opacity="0.2" />
-                  <path
-                    d="M190 218 l-1.2-1.1C184.5 212.8 182 210.2 182 207.1 182 204.6 183.7 203 185.8 203c1.2 0 2.3.6 3.2 1.4C189.9 203.6 191 203 192.2 203 194.3 203 196 204.6 196 207.1c0 3.1-2.5 5.7-6.8 9.8L190 218z"
-                    fill="#fff"
-                    opacity="0.85"
-                    transform="translate(0, -3) scale(0.9)"
-                  />
-                </g>
-              </>
-            )}
-
-            {/* === OPENED STATE === */}
-            {isOpened && (
-              <>
-                {/* Envelope body */}
-                <rect x="0" y="0" width="380" height="270" rx="8" fill="url(#envBody)" filter="url(#envDropShadow)" />
-
-                {/* Small hearts inside envelope */}
-                {[
-                  { x: 50, y: 60, s: 0.6, o: 0.08 },
-                  { x: 130, y: 80, s: 0.5, o: 0.06 },
-                  { x: 250, y: 55, s: 0.55, o: 0.07 },
-                  { x: 320, y: 75, s: 0.5, o: 0.06 },
-                  { x: 80, y: 160, s: 0.45, o: 0.05 },
-                  { x: 300, y: 170, s: 0.5, o: 0.06 },
-                  { x: 190, y: 100, s: 0.4, o: 0.04 },
-                ].map((h, i) => (
-                  <path
-                    key={i}
-                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                    fill="#e11d48"
-                    opacity={h.o}
-                    transform={`translate(${h.x}, ${h.y}) scale(${h.s})`}
-                  />
-                ))}
-
-                {/* Opened flap - folded backward/upward */}
-                <path
-                  d="M0 0 L190 -70 L380 0 Z"
-                  fill="url(#envFlapBack)"
-                  stroke="#f9a8d4"
-                  strokeWidth="0.8"
-                  opacity="0.7"
-                />
-                {/* Flap fold line */}
-                <line x1="0" y1="0" x2="380" y2="0" stroke="#f9a8d4" strokeWidth="1.5" opacity="0.5" />
-
-                {/* Letter peeking out of envelope */}
-                <g filter="url(#letterShadow)">
-                  <rect x="30" y="-50" width="320" height="80" rx="4" fill="url(#letterGrad)" stroke="#fda4af" strokeWidth="0.5" />
-                  {/* Left heart */}
-                  <path
-                    d="M108 -6 l-0.9-0.8C104.4 -9.5 102.5 -11.5 102.5 -13.8 102.5 -15.7 103.8 -17 105.4 -17c.9 0 1.7.5 2.4 1 .7-.6 1.5-1 2.4-1 1.6 0 2.9 1.3 2.9 3.2 0 2.3-1.9 4.3-5.1 7.3L108 -6z"
-                    fill="#e11d48"
-                    opacity="0.7"
-                  />
-                  {/* "I love you" text */}
-                  <text x="190" y="-2" textAnchor="middle" fontFamily="'Great Vibes', cursive" fontSize="26" fill="#e11d48" opacity="0.85">
-                    I love you
-                  </text>
-                  {/* Right heart */}
-                  <path
-                    d="M272 -6 l-0.9-0.8C268.4 -9.5 266.5 -11.5 266.5 -13.8 266.5 -15.7 267.8 -17 269.4 -17c.9 0 1.7.5 2.4 1 .7-.6 1.5-1 2.4-1 1.6 0 2.9 1.3 2.9 3.2 0 2.3-1.9 4.3-5.1 7.3L272 -6z"
-                    fill="#e11d48"
-                    opacity="0.7"
-                  />
-                </g>
-
-                {/* Inner pocket shadow */}
-                <path
-                  d="M0 8 L190 0 L380 8 L380 10 L190 2 L0 10 Z"
-                  fill="rgba(0,0,0,0.04)"
-                />
-              </>
-            )}
+            {/* Inner pocket shadow */}
+            <path
+              d="M0 8 L190 0 L380 8 L380 10 L190 2 L0 10 Z"
+              fill="rgba(0,0,0,0.04)"
+            />
           </svg>
         </motion.div>
 
         <motion.p
           className="text-center mt-6 sm:mt-8 text-rose-400 font-[family-name:var(--font-body)] text-sm sm:text-base md:text-lg"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 1 }}
+          animate={{ opacity: isOpened ? 0 : 1 }}
+          transition={{ delay: isOpened ? 0 : 2, duration: 0.5 }}
         >
-          {isOpened ? 'Opening...' : 'Tap to open the envelope'}
+          {isOpened ? '' : 'Tap to open the envelope'}
         </motion.p>
       </div>
 

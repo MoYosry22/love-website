@@ -193,13 +193,22 @@ button, a, [role="button"] {
   }
 }
 
+.video-thumb {
+  box-shadow: 0 2px 12px rgba(244, 63, 94, 0.15), 0 0 0 1px rgba(255, 182, 193, 0.25);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.video-thumb.active {
+  box-shadow: 0 4px 20px rgba(244, 63, 94, 0.35), 0 0 0 2px rgba(244, 63, 94, 0.6);
+}
+
 /* Bento grid layout (desktop only) */
 @media (min-width: 768px) {
   .grid-template-areas-bento {
     grid-template-areas:
       "hero hero tr"
       "hero hero br"
-      "b1  b2  b3";
+      "b1  b2  b3"
+      "b4  b4  b4";
   }
   .bento-hero { grid-area: hero; }
   .bento-tr   { grid-area: tr; }
@@ -207,6 +216,7 @@ button, a, [role="button"] {
   .bento-bottom:nth-child(4) { grid-area: b1; }
   .bento-bottom:nth-child(5) { grid-area: b2; }
   .bento-bottom:nth-child(6) { grid-area: b3; }
+  .bento-bottom:nth-child(7) { grid-area: b4; }
 }
 
 .animate-heart-breathe { animation: heartBreathe 4s ease-in-out infinite; }

@@ -4,17 +4,19 @@ import LoveLetterSection from './components/LoveLetterSection'
 import ReasonsILoveYou from './components/ReasonsILoveYou'
 import PhotoGallery from './components/PhotoGallery'
 import MusicPlayer from './components/MusicPlayer'
+import VideoSection from './components/VideoSection'
 import ClosingSection from './components/ClosingSection'
 import FloatingPetals from './components/FloatingPetals'
 import FloatingHearts from './components/FloatingHearts'
 import FloatingRibbons from './components/FloatingRibbons'
 import NavigationDots from './components/NavigationDots'
 
-const sectionNames = ['Love Letter', 'Reasons', 'Gallery', 'Forever']
+const sectionNames = ['Love Letter', 'Videos', 'Reasons', 'Gallery', 'Forever']
 
 export default function App() {
   const [hasEntered, setHasEntered] = useState(false)
   const [activeSection, setActiveSection] = useState(0)
+  const [videoMuted, setVideoMuted] = useState(false)
   const sectionRefs = useRef<(HTMLElement | null)[]>([])
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function App() {
       <FloatingPetals />
       <FloatingHearts />
       <FloatingRibbons />
-      <MusicPlayer isVisible={hasEntered} autoPlayTrack={0} />
+      <MusicPlayer isVisible={hasEntered} autoPlayTrack={0} muted={videoMuted} />
       <NavigationDots
         sections={sectionNames}
         activeSection={activeSection}
@@ -75,12 +77,15 @@ export default function App() {
           <LoveLetterSection />
         </section>
         <section ref={setSectionRef(1)}>
-          <ReasonsILoveYou />
+          <VideoSection onVideoMutedChange={setVideoMuted} />
         </section>
         <section ref={setSectionRef(2)}>
-          <PhotoGallery />
+          <ReasonsILoveYou />
         </section>
         <section ref={setSectionRef(3)}>
+          <PhotoGallery />
+        </section>
+        <section ref={setSectionRef(4)}>
           <ClosingSection />
         </section>
 
