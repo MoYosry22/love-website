@@ -83,6 +83,16 @@ export default function App() {
         <section ref={setSectionRef(3)}>
           <ClosingSection />
         </section>
+
+        {/* Footer copyright */}
+        <footer className="text-center py-8 sm:py-10 border-t border-rose-200/40">
+          <p className="font-[family-name:var(--font-body)] text-rose-400 text-sm sm:text-base">
+            &copy; {new Date().getFullYear()} All rights reserved
+          </p>
+          <p className="font-[family-name:var(--font-body)] text-rose-400/70 text-xs sm:text-sm mt-1">
+            Created by <span className="text-rose-500 font-semibold">Mohamed Yousry</span>
+          </p>
+        </footer>
       </main>
     </div>
   )
